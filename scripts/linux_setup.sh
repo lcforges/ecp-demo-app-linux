@@ -21,6 +21,9 @@ TOKEN_NAME="Demo Token"
 OBJECT_LABEL="Demo Object"
 PIN="0000"
 
+BUILD_DIR=$(mktemp -d)
+DEMO_BINARY_DIR=$(echo "${PWD}/bin/linux")
+
 install_dependencies() {
   # Install PKCS #11 related dependencies.
   # 1. softhsm2 is a software based HSM that implements the PKCS #11 spec.
@@ -36,6 +39,11 @@ setup_pkcs11_module() {
   sudo mkdir -p /etc/pkcs11/modules && echo "module: /usr/lib/softhsm/libsofthsm2.so" | sudo tee -a /etc/pkcs11/modules/softhsm.module
 
   # Create folder for storing PKCS #11 objects
+  if [ -d "$HOME/.config/softhsm2/tokens" ]; then
+     # Delete old objects
+     rm -rf $HOME/.config/softhsm2/tokens
+  fi
+
   mkdir -p $HOME/.config/softhsm2/tokens
 
   cat <<EOF > $HOME/.config/softhsm2/softhsm2.conf
@@ -45,13 +53,11 @@ log.level = INFO
 slots.removable = true
 EOF
 
-  softhsm2-util --delete-token --token "$TOKEN_NAME" || :
   pkcs11-tool --init-token --label "$TOKEN_NAME" --module $SOFTHSM2_MODULE --slot 0 --so-pin $PIN
   SLOT=$(pkcs11-tool --list-slots --module $SOFTHSM2_MODULE | grep  -Eo "0x[A-Fa-f0-9]+" | head -n 1)
   pkcs11-tool --module $SOFTHSM2_MODULE --token-label "$TOKEN_NAME" --login --init-pin --pin $PIN --so-pin $PIN
 
 
-  BUILD_DIR=$(mktemp -d)
   pushd $BUILD_DIR
 
   openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365 -nodes -subj "/C=US/ST=WA/L=Sea/O=My Inc/OU=DevOps/CN=www.example.com/emailAddress=dev@www.example.com"
@@ -65,18 +71,23 @@ EOF
   pkcs11-tool --module $SOFTHSM2_MODULE --slot $SLOT --write-object private_key.der --type privkey --label "$OBJECT_LABEL" --login --pin $PIN
   pkcs11-tool --module $SOFTHSM2_MODULE --slot $SLOT --write-object public_key.der --type pubkey --label "$OBJECT_LABEL" --login --pin $PIN
 
-  rm -rf $BUILD_DIR
-
   popd
 }
 
 build_ecp() {
+  pushd $BUILD_DIR
   git clone https://github.com/lcforges/enterprise-certificate-proxy.git
   pushd enterprise-certificate-proxy
+
+  if [ -d "$DEMO_BINARY_DIR" ]; then
+     mkdir -p "$DEMO_BINARY_DIR"
+  fi
+
   ./build/scripts/linux_amd64.sh
-  scp ./build/bin/linux_amd64/ecp ../bin/linux
-  scp ./build/bin/linux_amd64/libecp.so ../bin/linux
-  rm -rf ../enterprise-certificate-proxy
+  scp ./build/bin/linux_amd64/ecp "$DEMO_BINARY_DIR"
+  scp ./build/bin/linux_amd64/libecp.so "$DEMO_BINARY_DIR"
+
+  popd
   popd
 }
 
@@ -87,13 +98,14 @@ create_linux_config() {
     "pkcs11": {
       "module": "$SOFTHSM2_MODULE",
       "slot": "$SLOT",
-      "label": "$OBJECT_LABEL"
+      "label": "$OBJECT_LABEL",
+      "user_pin": "$PIN"
     }
   },
   "libs": {
-    "ecp": "$PWD/bin/linux/ecp",
-    "ecp_client": "$PWD/bin/linux/libecp.so",
-    "tls_offload": "$PWD/bin/linux/libtls_offload.so"
+    "ecp": "$DEMO_BINARY_DIR/ecp",
+    "ecp_client": "$DEMO_BINARY_DIR/libecp.so",
+    "tls_offload": "$DEMO_BINARY_DIR/libtls_offload.so"
   }
 }
 EOF

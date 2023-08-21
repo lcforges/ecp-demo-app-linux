@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	linuxConfigFilePath = "/usr/local/google/home/lforges/ecp-demo-app-linux/linux_config.json"
+	linuxConfigFilePath = "linux_config.json"
 )
 func TestEncrypt(t *testing.T) {
 	key, err := client.Cred(linuxConfigFilePath)
