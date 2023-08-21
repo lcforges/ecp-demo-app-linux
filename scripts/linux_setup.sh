@@ -74,7 +74,6 @@ build_ecp() {
   git clone https://github.com/lcforges/enterprise-certificate-proxy.git
   pushd enterprise-certificate-proxy
   ./build/scripts/linux_amd64.sh
-#   mkdir ../bin/linux
   scp ./build/bin/linux_amd64/ecp ../bin/linux
   scp ./build/bin/linux_amd64/libecp.so ../bin/linux
   rm -rf ../enterprise-certificate-proxy
