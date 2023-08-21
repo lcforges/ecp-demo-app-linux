@@ -79,7 +79,7 @@ build_ecp() {
   git clone https://github.com/lcforges/enterprise-certificate-proxy.git
   pushd enterprise-certificate-proxy
 
-  if [ -d "$DEMO_BINARY_DIR" ]; then
+  if [ ! -d "$DEMO_BINARY_DIR" ]; then
      mkdir -p "$DEMO_BINARY_DIR"
   fi
 

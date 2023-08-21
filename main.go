@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	configFilePath = "/usr/local/google/home/lforges/ecp-demo-app-linux/linux_config.json"
+	configFilePath = "linux_config.json"
 )
 
 func main() {
