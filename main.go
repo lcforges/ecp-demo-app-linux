@@ -8,8 +8,12 @@ import (
 	"github.com/googleapis/enterprise-certificate-proxy/client"
 )
 
+const (
+	configFilePath = "/usr/local/google/home/lforges/ecp-demo-app-linux/linux_config.json"
+)
+
 func main() {
-	key, err := client.Cred("")
+	key, err := client.Cred(configFilePath)
 	if err != nil {
 		log.Printf("Cred: got %v, want nil err", err)
 	}

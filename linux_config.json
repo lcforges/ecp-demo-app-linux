@@ -1,0 +1,14 @@
+{
+  "cert_configs": {
+    "pkcs11": {
+      "module": "/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so",
+      "slot": "0x18a5c797",
+      "label": "Demo Object"
+    }
+  },
+  "libs": {
+    "ecp": "/usr/local/google/home/lforges/ecp-demo-app-linux/bin/linux/ecp",
+    "ecp_client": "/usr/local/google/home/lforges/ecp-demo-app-linux/bin/linux/libecp.so",
+    "tls_offload": "/usr/local/google/home/lforges/ecp-demo-app-linux/bin/linux/libtls_offload.so"
+  }
+}

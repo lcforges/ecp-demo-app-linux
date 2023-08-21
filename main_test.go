@@ -6,8 +6,11 @@ import (
 	"github.com/googleapis/enterprise-certificate-proxy/client"
 )
 
+const (
+	linuxConfigFilePath = "/usr/local/google/home/lforges/ecp-demo-app-linux/linux_config.json"
+)
 func TestEncrypt(t *testing.T) {
-	key, err := client.Cred("")
+	key, err := client.Cred(linuxConfigFilePath)
 	if err != nil {
 		t.Errorf("Cred: got %v, want nil err", err)
 		return
