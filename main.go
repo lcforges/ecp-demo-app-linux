@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
 	"flag"
 	"log"
@@ -38,8 +39,8 @@ func main() {
 			log.Printf("Encrypt: got %v, want nil err", err)
 			return
 		}
-		str := base64.StdEncoding.EncodeToString(ciphertext)
-		log.Printf("Encrypted message: %v", str)
+		cipherString := base64.StdEncoding.EncodeToString(ciphertext)
+		log.Printf("Encrypted message: %v", cipherString)
 	} else {
 		str, err := base64.StdEncoding.DecodeString(*msg)
 		if err != nil {
@@ -50,6 +51,7 @@ func main() {
 			log.Printf("Decrypt: got %v, want nil err", err)
 			return
 		}
+		plaintext = bytes.Trim(plaintext, "\x00")
 		plainString := string(plaintext)
 		log.Printf("Decrypted message: %v", plainString)
 	}
