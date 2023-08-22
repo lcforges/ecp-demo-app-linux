@@ -17,6 +17,7 @@ func main() {
 	key, err := client.Cred(configFilePath)
 	if err != nil {
 		log.Printf("Cred: got %v, want nil err", err)
+		return
 	}
 	mode := flag.String("mode", "", "the flag for action: -e for encryption or -d for decryption")
 	msg := flag.String("msg", "", "the message to encrypt or decrypt")
@@ -45,6 +46,7 @@ func main() {
 		str, err := base64.StdEncoding.DecodeString(*msg)
 		if err != nil {
 			log.Printf("Base64: got %v, want nil err", err)
+			return
 		}
 		plaintext, err := key.Decrypt([]byte(str))
 		if err != nil {
