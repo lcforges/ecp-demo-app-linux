@@ -9,10 +9,10 @@ To use the app, you need to specify the following flags:
 
 - __msg__: The message to encrypt or decrypt.
 
-For example, to encrypt the message "Hello, world!", you would run the following command:
+For example, to encrypt the message "Hello, world", you would run the following command:
 
 ```
-    $ go run main.go -mode -e -msg "Hello, world!"
+    $ go run main.go -mode -e -msg "Hello, world"
 ```
 The app will print the encrypted message to the console.
 
